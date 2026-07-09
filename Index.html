@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>AI Weather Dashboard</title>
+
+<!--
+  AI WEATHER DASHBOARD
+  ----------------------------------------
+  Weather data : Open-Meteo (open-meteo.com) — free, no signup, no API key.
+  "AI" section : rule-based JavaScript logic that reads the numbers Open-Meteo
+                 returns (temperature, rain chance, wind) and writes plain-English
+                 advice. See the generateAIInsights() function in the script below —
+                 that's the "AI" — no external AI service is called, which is what
+                 keeps this file free, fast, and easy to host anywhere.
+  New features : 1) Animated weather background — rain drops, thunder flashes,
+                    falling snow, drifting clouds, or fog behind the whole page,
+                    chosen automatically from the searched city's weather_code.
+                    See setWeatherEffect() — plain DOM + CSS, no canvas/libraries.
+                 2) Sunrise / Sunset / Day length card — pulled straight from
+                    Open-Meteo's daily.sunrise/sunset fields. See renderSunInfo().
+  Structure    : 1) HTML markup   2) CSS (design tokens + styles)   3) JavaScript
+                 Search for the big comment banners ("======") to jump between them.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div id="weatherFx" aria-hidden="true"></div>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">🌦</span><span class="brand-text">AI Weather Dashboard</span></div>
+    <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode">🌙</button>
+  </header>
+
+  <form id="searchForm" class="search-bar">
+    <input id="cityInput" type="text" placeholder="Search a city…" autocomplete="off" aria-label="City name">
+    <button type="submit" class="btn-primary">Search</button>
+    <button id="locateBtn" type="button" class="icon-btn" title="Use my location" aria-label="Use my location">📍</button>
+  </form>
+
+  <div id="loader" class="loader hidden" aria-live="polite"><span class="spinner"></span>&nbsp; Reading the sky…</div>
+  <div id="errorMsg" class="error hidden" role="alert"></div>
+
+  <main id="content" class="content hidden">
+
+    <section class="hero">
+      <p class="location-name" id="locationName">—</p>
+      <p class="current-date" id="currentDate">—</p>
+
+      <div class="hero-main">
+        <span class="current-icon" id="currentIcon">☀️</span>
+        <span class="current-temp" id="currentTemp">--°</span>
+      </div>
+      <p class="current-desc" id="currentDesc">—</p>
+
+      <div class="stat-row">
+        <div class="stat"><span class="stat-label">Feels like</span><span class="stat-value" id="feelsLike">--°</span></div>
+        <div class="stat"><span class="stat-label">Humidity</span><span class="stat-value" id="humidity">--%</span></div>
+        <div class="stat"><span class="stat-label">Wind</span><span class="stat-value" id="windSpeed">-- km/h</span></div>
+      </div>
+    </section>
+
+    <section class="ai-card">
+      <h2 class="section-title">🤖 AI Weather Assistant</h2>
+      <p class="ai-summary" id="aiSummary">—</p>
+      <div class="ai-tips">
+        <div class="tip"><span class="tip-label">👔 Clothing</span><span class="tip-text" id="tipClothing">—</span></div>
+        <div class="tip"><span class="tip-label">☂️ Umbrella</span><span class="tip-text" id="tipUmbrella">—</span></div>
+        <div class="tip"><span class="tip-label">🧭 Travel</span><span class="tip-text" id="tipTravel">—</span></div>
+      </div>
+    </section>
+
+    <section class="sun-card">
+      <div class="sun-stat">
+        <span class="sun-stat-icon">🌅</span>
+        <span class="sun-stat-label">Sunrise</span>
+        <span class="sun-stat-value" id="sunrise">--</span>
+      </div>
+      <div class="sun-stat">
+        <span class="sun-stat-icon">🌇</span>
+        <span class="sun-stat-label">Sunset</span>
+        <span class="sun-stat-value" id="sunset">--</span>
+      </div>
+      <div class="sun-stat">
+        <span class="sun-stat-icon">⏱️</span>
+        <span class="sun-stat-label">Day length</span>
+        <span class="sun-stat-value" id="dayLength">--</span>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <h2 class="section-title">7-Day Outlook</h2>
+      <div class="forecast-grid" id="forecastGrid"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">Weather data from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · Built by Your Name</footer>
+</div>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>
